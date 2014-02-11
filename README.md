@@ -1,9 +1,14 @@
 nodejs-passport
 ===============
 
-## Tag v1
+Passport 模块案例
 
-[Express结合Passport实现登陆认证](http://blog.fens.me/nodejs-express-passport/)
+## Tags 
+
+#### v1
+
++ [Express结合Passport实现登陆认证](http://blog.fens.me/nodejs-express-passport/)
++ Download: https://github.com/bsspirit/nodejs-passport/archive/v1.zip
 
 ## Install 
 
