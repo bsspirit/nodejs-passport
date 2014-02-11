@@ -6,7 +6,9 @@ var express = require('express')
     , app = express();
 
 var passport = require('passport')
-    , LocalStrategy = require('passport-local').Strategy;
+    , LocalStrategy = require('passport-local').Strategy
+    , GithubStrategy = require('passport-github').Strategy
+    , LinkedinStrategy = require('passport-linkedin').Strategy;
 
 app.set('port', process.env.PORT || 3000);
 app.set('views', __dirname + '/views');
@@ -45,6 +47,23 @@ passport.use('local', new LocalStrategy(
     }
 ));
 
+passport.use(new GithubStrategy({
+    clientID: "XXXXX",
+    clientSecret: "XXXXX",
+    callbackURL: "http://localhost:3000/auth/github/callback"
+},function(accessToken, refreshToken, profile, done) {
+    done(null, profile);
+}));
+
+passport.use(new LinkedinStrategy({
+    consumerKey: "XXXXX",
+    consumerSecret: "XXXXX",
+    callbackURL: "http://localhost:3000/auth/linkedin/callback",
+    userAgent: 'localhost'
+},function(accessToken, refreshToken, profile, done) {
+    done(null, profile);
+}));
+
 passport.serializeUser(function (user, done) {//保存user对象
     done(null, user);//可以通过数据库方式操作
 });
@@ -66,6 +85,24 @@ app.get('/logout', function (req, res) {
     req.logout();
     res.redirect('/');
 });
+
+app.all('/github', isLoggedIn);
+app.get("/github",user.github);
+app.get("/auth/github", passport.authenticate("github",{ scope : "email"}));
+app.get("/auth/github/callback",
+    passport.authenticate("github",{
+        successRedirect: '/github',
+        failureRedirect: '/'
+    }));
+
+app.all('/linkedin', isLoggedIn);
+app.get("/linkedin",user.linkedin);
+app.get("/auth/linkedin", passport.authenticate("linkedin",{}));
+app.get("/auth/linkedin/callback",
+    passport.authenticate("linkedin",{
+        successRedirect: '/linkedin',
+        failureRedirect: '/'
+    }));
 
 http.createServer(app).listen(app.get('port'), function () {
     console.log('Express server listening on port ' + app.get('port'));
